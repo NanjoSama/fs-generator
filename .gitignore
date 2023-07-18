@@ -1,0 +1,5 @@
+fs-generator.sublime-project
+fs-generator.sublime-workspace
+fs-generator.ui
+__pycache__/
+venv/
