@@ -4,7 +4,31 @@ import json
 import random
 
 class Transaction(object):
+  """
+  A transaction. It contains information about the following:
+  * The kind of transaction it is. (TODO: I used the word account for some reason.)
+  * The entry itself in plain text.
+  * The date of transaction.
+  * If the transaction is related to a previous transaction, the date of the
+    transaction in question.
+
+  TODO:
+  * The amount of money exchanged in the transaction.
+  * The flow of accounts, i.e. accounts debited and credited.
+  """
   def __init__(self, account, entry, date, orig_date=None):
+    """
+    Initialize the attributes.
+
+    Arguments:
+      `account`: The transaction in question. (TODO: Again, transaction, not
+        account.)
+      `entry`: The entry in plain text.
+      `date`: The date of transaction.
+      `orig_date`: If the transaction is related to a previous transaction,
+        the date of the transaction in question.
+    """
+
     self.account = account
     self.entry = entry
     self.date = date
@@ -23,9 +47,9 @@ class TransactionGen:
 
   def __init__(self):
     """
-    The initializer method. All it does is read the JSON database that will be
-    used throughout the lifetime of the program, then divide the data into
-    separate variables for convenience and readability.
+    Read the JSON database that will be used throughout the lifetime of the
+    program, then divide the data into separate attributes for convenience and
+    readability.
     """
 
     self.data = self.loadJSON()
@@ -41,29 +65,26 @@ class TransactionGen:
   def _convertToTransaction(self, account, entry, date, orig_date=None, min_amount=100000, max_amount=10000000):
     """
     Entries in the database contains placeholder text like `name` and `amount`.
-    This method replaces the placeholder text with a random value the
-    placeholder asks for.
+    Replace the placeholder text with a random value the placeholder asks for,
+    then convert it into a transaction object.
 
-    `amount` is replaced by a random value between a range specified by the
+    '`amount`' is replaced by a random value between a range specified by the
     user, or by default, between 100k and 10m. (TODO: Maybe make it more
     dynamic make it more accurate to the account it's for.)
 
-    `name` is replaced by a random name in the database's predetermined list
+    '`name`' is replaced by a random name in the database's predetermined list
     of names. This method also detects whether the name is of a supplier's or
     a customer's.
 
-    `date` is replaced by a date specified by the user. The date is generated
-    in generateEntries() because TODO...
-
     Arguments:
-      account: The account type.
-      entry: The entry to handle.
-      date: The date of an original transaction.
-      min_amount: The minimum amount for randomization.
-      max_amount: The maximum amount for randomization.
+      `account`: The transaction type. (TODO: Transaction, not account.)
+      `entry`: The entry to handle.
+      `date`: The date of an original transaction.
+      `min_amount`: The minimum amount for randomization.
+      `max_amount`: The maximum amount for randomization.
 
     Returns:
-      The finished entry.
+      The transaction in object form.
     """
 
     if "`amount`" in entry:
@@ -83,10 +104,10 @@ class TransactionGen:
 
   def loadJSON(self):
     """
-    This method loads the database the class will work with.
+    Load the database the class will work with.
 
     Returns:
-      The data from the JSON database.
+      A dictionary containing the data from the JSON database.
     """
 
     with open("transaction_db.json") as file:
@@ -94,18 +115,21 @@ class TransactionGen:
 
   def generateDate(self, year=0, month=0, min_day=1):
     """
-    This method generates a random date for an entry. The user may specify a
-    year, month, and a minimum day to control the randomization.
+    Generate a random date for an entry. The user may specify a year and/or
+    month to use instead of a random one. Transactions related to a previous
+    transaction will use a minimum day to place the new date after that
+    transaction date.
 
     Arguments:
-      year: The year to be used. If none specified, a random year between 2020
-      and 2030 will be used.
-      month: The month to be used. If none specified, a random month will be
-      used.
-      TODO...
+      `year`: The year to be used. If none specified, a random year between
+        2020 and 2030 will be used.
+      `month`: The month to be used. If none specified, a random month will be
+        used.
+      `min_day`: The minimum day. If specified, the random date will be a date
+        after input day.
 
     Returns:
-      The final randomized date.
+      A `datetime.date` object containing the final randomized date.
     """
 
     if year == 0:
@@ -126,28 +150,27 @@ class TransactionGen:
 
   def generateName(self, category):
     """
-    Picks a random name of a category of either 'customers' or 'suppliers'
+    Pick a random name under either the 'customers' or 'suppliers' category
     from the database's list of names.
 
     Arguments:
-      category: Either 'customers' and 'suppliers'.
+      `category`: Either 'customers' and 'suppliers'.
     
     Returns:
-      The final randomized name.
+      The final randomized name string.
     """
     return random.choice(self.data["names"][category])
 
-  def generateTransactions(self, batch_size=5): # TODO: Original transaction is in the future???
+  def generateTransactions(self, batch_size=5):
     """
-    The main attraction of the class. This method generates a number of 
-    randomized entries. The number, or batch size, may be specified by the
-    user.
+    Generate a batch of randomized entries. The batch size, may be specified
+    by the user. The main attraction of the class.
 
     This method will not add transactions that require a previous date to the
     batch list. It will automatically sort the transactions by date.
 
     Arguments:
-      batch_size: The number of entries to generate. By default, 5 entries
+      `batch_size`: The number of entries to generate. By default, 5 entries
       will be generated.
 
     Return:
