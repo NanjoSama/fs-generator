@@ -6,7 +6,7 @@ import random
 class Transaction(object):
   """
   A transaction. It contains information about the following:
-  * The kind of transaction it is. (TODO: I used the word account for some reason.)
+  * The type of transaction it is.
   * The entry itself in plain text.
   * The date of transaction.
   * If the transaction is related to a previous transaction, the date of the
@@ -16,20 +16,20 @@ class Transaction(object):
   * The amount of money exchanged in the transaction.
   * The flow of accounts, i.e. accounts debited and credited.
   """
-  def __init__(self, account, entry, date, orig_date=None):
+  def __init__(self, type_, entry, date, orig_date=None):
     """
     Initialize the attributes.
 
     Arguments:
-      `account`: The transaction in question. (TODO: Again, transaction, not
-        account.)
+      `type_`: The type of transaction in question. (Note: Variable name is
+        still kinda iffy for me.)
       `entry`: The entry in plain text.
       `date`: The date of transaction.
       `orig_date`: If the transaction is related to a previous transaction,
         the date of the transaction in question.
     """
 
-    self.account = account
+    self.type_ = type_
     self.entry = entry
     self.date = date
     self.orig_date = orig_date
@@ -55,14 +55,14 @@ class TransactionGen:
     self.data = self.loadJSON()
     self.cash_flows = self.data["cash_flows"]
     self.entries = self.data["entries"]
-    self.accounts = list(self.cash_flows.keys())
+    self.types = list(self.cash_flows.keys())
     self.names = self.data["names"]
 
-    self.generated_accounts = []
+    self.generated_types = []
     self.generated_transactions = []
     self.generated_dates = []
 
-  def _convertToTransaction(self, account, entry, date, orig_date=None, min_amount=100000, max_amount=10000000):
+  def _convertToTransaction(self, type_, entry, date, orig_date=None, min_amount=100000, max_amount=10000000):
     """
     Entries in the database contains placeholder text like `name` and `amount`.
     Replace the placeholder text with a random value the placeholder asks for,
@@ -77,7 +77,7 @@ class TransactionGen:
     a customer's.
 
     Arguments:
-      `account`: The transaction type. (TODO: Transaction, not account.)
+      `type_`: The transaction type. (See line 24-25)
       `entry`: The entry to handle.
       `date`: The date of an original transaction.
       `min_amount`: The minimum amount for randomization.
@@ -92,15 +92,15 @@ class TransactionGen:
       entry = entry.replace("`amount`", f"PHP {format(random_amount, ',')}")
 
     if "`name`" in entry:
-      if account in ["purchases", "purchase_return", "account_payment"]:
+      if type_ in ["purchases", "purchase_return", "account_payment"]:
         random_name = random.choice(self.names["suppliers"])
-      elif account in ["sales", "sales_return", "account_collection"]:
+      elif type_ in ["sales", "sales_return", "account_collection"]:
         random_name = random.choice(self.names["customers"])
       else:
         random_name = "`NAME ERROR`"
       entry = entry.replace("`name`", random_name)
 
-    return Transaction(account, entry, date, orig_date)
+    return Transaction(type_, entry, date, orig_date)
 
   def loadJSON(self):
     """
@@ -186,28 +186,28 @@ class TransactionGen:
       orig_date = None
 
       while True:
-        account = random.choice(self.accounts)
+        type_ = random.choice(self.types)
 
-        if account in ["purchase_return", "sales_return", "account_payment", "account_collection", "accrued_salaries_payment"]:
-          if (account in ["account_payment", "purchase_return"]) and ("purchases" in self.generated_accounts):
+        if type_ in ["purchase_return", "sales_return", "account_payment", "account_collection", "accrued_salaries_payment"]:
+          if (type_ in ["account_payment", "purchase_return"]) and ("purchases" in self.generated_types):
             orig_account = "purchases"
-          elif (account in ["account_collection", "sales_return"]) and ("sales" in self.generated_accounts):
+          elif (type_ in ["account_collection", "sales_return"]) and ("sales" in self.generated_types):
             orig_account = "sales"
-          elif (account == "accrued_salaries_payment") and (self.generated_accounts.count("salaries_expense") > self.generated_accounts.count("accrued_salaries_payment")):
+          elif (type_ == "accrued_salaries_payment") and (self.generated_types.count("salaries_expense") > self.generated_types.count("accrued_salaries_payment")):
             orig_account = "salaries_expense"
-          elif (account in ["bad_debt_allowance", "bad_debt_writeoff"]) and (account in self.generated_accounts):
+          elif (type_ in ["bad_debt_allowance", "bad_debt_writeoff"]) and (type_ in self.generated_types):
             continue
           else:
             continue
 
-          orig_date = self.generated_dates[self.generated_accounts.index(orig_account)]
+          orig_date = self.generated_dates[self.generated_types.index(orig_account)]
           date = self.generateDate(year=orig_date.year, month=orig_date.month, min_day=orig_date.day)
         
-        self.generated_accounts.append(account)
+        self.generated_types.append(type_)
         break
 
-      entry = self.entries[account] # TODO: Instead of entries, choose from accounts, then fetch entry.
-      transaction = self._convertToTransaction(account, entry, date, orig_date=orig_date)
+      entry = self.entries[type_] # TODO: Instead of entries, choose from accounts, then fetch entry.
+      transaction = self._convertToTransaction(type_, entry, date, orig_date=orig_date)
 
       self.generated_dates.append(date)
       self.generated_transactions.append(transaction)
