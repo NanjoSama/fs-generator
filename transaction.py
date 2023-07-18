@@ -11,18 +11,18 @@ class Transaction(object):
   * The date of transaction.
   * If the transaction is related to a previous transaction, the date of the
     transaction in question.
-
-  TODO:
   * The amount of money exchanged in the transaction.
   * The flow of accounts, i.e. accounts debited and credited.
   """
-  def __init__(self, type_, entry, amount, date, orig_date=None):
+  def __init__(self, type_, entry, amount, cash_flows, date, orig_date=None):
     """
     Initialize the attributes.
 
     Arguments:
       `type_`: The type of transaction in question. (Note: Variable name is
         still kinda iffy for me.)
+      `amount`: The amount exchanged in the transaction.
+      `cash_flows`: The accounts debit and credited.
       `entry`: The entry in plain text.
       `date`: The date of transaction.
       `orig_date`: If the transaction is related to a previous transaction,
@@ -32,6 +32,7 @@ class Transaction(object):
     self.type_ = type_
     self.entry = entry
     self.amount = amount
+    self.cash_flows = cash_flows
     self.date = date
     self.orig_date = orig_date
 
@@ -101,7 +102,7 @@ class TransactionGen:
         random_name = "`NAME ERROR`"
       entry = entry.replace("`name`", random_name)
 
-    return Transaction(type_, entry, random_amount, date, orig_date)
+    return Transaction(type_, entry, random_amount, self.cash_flows[type_], date, orig_date)
 
   def loadJSON(self):
     """
@@ -142,7 +143,7 @@ class TransactionGen:
     days_in_month = (date(year, month + 1, 1) - date(year, month, 1)).days
 
     while True:
-      day = random.randint(min_day+1, days_in_month)
+      day = random.randint(min_day+1, days_in_month) # TODO: Literally move this two lines after.
       if (min_day < days_in_month) or (min_day > 1):
         break
 

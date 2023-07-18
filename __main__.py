@@ -17,3 +17,27 @@ for transaction in transaction_list:
   table.append(row)
 
 print(tabulate(table, headers="firstrow", tablefmt="pipe", colalign=('left', 'left', 'right', 'left')))
+
+table = [["Date", "Type", "Debit", "Credit"]]
+
+for transaction in transaction_list:
+  row = []
+  row.append(transaction.date)
+  row.append(transaction.type_)
+
+  debit = ""
+  credit = ""
+  
+  for account in transaction.cash_flows['debit']:
+    debit += f"{account}\n"
+  debit = debit[:-1]
+  row.append(debit)
+
+  for account in transaction.cash_flows['credit']:
+    credit += f"{account}\n"
+  credit = credit[:-1]
+  row.append(credit)
+
+  table.append(row)
+
+print(tabulate(table, headers="firstrow", tablefmt="pipe"))
