@@ -16,7 +16,7 @@ class Transaction(object):
   * The amount of money exchanged in the transaction.
   * The flow of accounts, i.e. accounts debited and credited.
   """
-  def __init__(self, type_, entry, date, orig_date=None):
+  def __init__(self, type_, entry, amount, date, orig_date=None):
     """
     Initialize the attributes.
 
@@ -31,6 +31,7 @@ class Transaction(object):
 
     self.type_ = type_
     self.entry = entry
+    self.amount = amount
     self.date = date
     self.orig_date = orig_date
 
@@ -100,7 +101,7 @@ class TransactionGen:
         random_name = "`NAME ERROR`"
       entry = entry.replace("`name`", random_name)
 
-    return Transaction(type_, entry, date, orig_date)
+    return Transaction(type_, entry, random_amount, date, orig_date)
 
   def loadJSON(self):
     """
