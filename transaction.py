@@ -178,11 +178,7 @@ class TransactionGen:
     """
 
     for _ in range(batch_size):
-      try:
-        date = self.generateDate(year=2022, month=1)
-      except Exception as e:
-        print(f"{type(self)}\n\n\n")
-        raise e
+      date = self.generateDate(year=2022, month=1)
       orig_date = None
 
       while True:
