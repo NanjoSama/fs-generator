@@ -143,9 +143,11 @@ class TransactionGen:
     days_in_month = (date(year, month + 1, 1) - date(year, month, 1)).days
 
     while True:
-      day = random.randint(min_day+1, days_in_month) # TODO: Literally move this two lines after.
-      if (min_day < days_in_month) or (min_day > 1):
-        break
+      if (min_day + 1 >= days_in_month) or (min_day + 1 < 1):
+        continue
+
+      day = random.randint(min_day+1, days_in_month)
+      break
 
     random_date = date(year, month, day)
     return random_date
