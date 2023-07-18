@@ -212,4 +212,7 @@ class TransactionGen:
       self.generated_dates.append(date)
       self.generated_transactions.append(transaction)
 
+    sorted_zip = sorted(zip(self.generated_dates, self.generated_transactions))
+    self.generated_dates, self.generated_transactions = zip(*sorted_zip)
+    
     return self.generated_transactions
