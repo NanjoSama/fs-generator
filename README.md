@@ -12,13 +12,16 @@ You only need to check the checkbox that says "Add Python 3.x to PATH". This
 is important for easy access to Python from the command line. If you're not
 interested in coding in Python, I suggest not to touch anything else except
 "Next" or "Install".
-2. Click the "<> Code" button above then select "Download ZIP".
-3. Open up a command prompt or Windows Powershell in the folder you downloaded
-from this site.
+2. Click the "<> Code" button above then select "Download ZIP". Extract the
+file anywhere you want.
+3. Open up a command prompt or Windows Powershell in that folder. If you don't
+know how, go the File tab on the top of your file manager and "Open Windows
+PowerShell" should be there. Click on it.
 4. Enter this line of code: `venv/Scripts/activate` and press Enter. Your
 prompt should now look like `(venv) C:\User\...`
 5. Enter this line of code: `python .` (Include the period otherwise it won't
 work)
+
 The program should now run. You can repeat step 5 any time after the program
 ends to restart it. After you close the prompt, you can restart from step 3.
 
