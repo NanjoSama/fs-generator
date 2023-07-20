@@ -71,8 +71,7 @@ class TransactionGen:
     then convert it into a transaction object.
 
     '`amount`' is replaced by a random value between a range specified by the
-    user, or by default, between 100k and 10m. (TODO: Maybe make it more
-    dynamic make it more accurate to the account it's for.)
+    user, or by default, between 100k and 10m.
 
     '`name`' is replaced by a random name in the database's predetermined list
     of names. This method also detects whether the name is of a supplier's or
@@ -206,7 +205,7 @@ class TransactionGen:
         self.generated_types.append(type_)
         break
 
-      entry = self.entries[type_] # TODO: Instead of entries, choose from accounts, then fetch entry.
+      entry = self.entries[type_]
       transaction = self._convertToTransaction(type_, entry, date, orig_date=orig_date)
 
       self.generated_dates.append(date)
