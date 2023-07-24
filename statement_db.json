@@ -1,0 +1,16 @@
+{
+	"accounts": [
+		[101, "Cash", "debit"],
+		[102, "Accounts Receivable", "debit"],
+		[201, "Allowance for Doubtful Accounts", "credit"],
+		[301, "Accounts Payable", "credit"],
+		[302, "Accrued Salaries Payable", "credit"],
+		[601, "Sales", "credit"],
+		[602, "Sales Returns", "debit"],
+		[701, "Purchases", "debit"],
+		[702, "Purchase Returns", "credit"],
+		[703, "Bad Debt Expense", "debit"],
+		[704, "Utilities Expense", "debit"],
+		[705, "Salaries Expense", "debit"]
+	]
+}

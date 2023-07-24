@@ -1,6 +1,7 @@
 from tabulate import tabulate
 
 from transaction import TransactionGen
+from statement import FinancialPosition
 
 def generateTransactionsOnly(batch_size):
   generator = TransactionGen()
@@ -54,7 +55,7 @@ while True:
 Enter the number of the action you want to perform.
 [0] - Exit (Or you could just close the prompt I guess)
 [1] - Generate transactions only
-[WIP] - Generate a financial position statement
+[2] - Generate a financial position statement
 >>> """))
   except ValueError:
     print("\nPlease enter a valid number!\n")
@@ -74,6 +75,12 @@ Enter the number of the action you want to perform.
 
     print("\n")
     generateTransactionsOnly(batch_size)
+
+  elif choice == 2:
+    sfp = FinancialPosition()
+    sfp.generateAccounts()
+    print()
+    print(sfp.tabulate())
 
   else:
     print("\nPlease enter a valid number!\n")
