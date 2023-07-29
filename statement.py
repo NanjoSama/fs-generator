@@ -22,12 +22,12 @@ class FinancialPosition(object):
       return list(json.load(file).values())[0]
 
   def generateAccounts(self, min_amount=100_000, max_amount=1_000_000):
-    # Find the length of the debit and credit account lists.
-    debit_length = len([data for data in self.account_list if data[2] == "debit"])
-    credit_length = len([data for data in self.account_list if data[2] == "credit"])
+    # Split account list between direction of cash flow.
+    debit_accounts = [data for data in self.account_list if data[2] == "debit"]
+    credit_accounts = [data for data in self.account_list if data[2] == "credit"]
 
-    len1 = min(debit_length, credit_length)
-    len2 = max(debit_length, credit_length)
+    len1 = min(len(debit_accounts), len(credit_accounts))
+    len2 = max(len(debit_accounts), len(credit_accounts))
 
     # Generate the first list.
     list1 = [random.randint(min_amount, max_amount) for _ in range(len1)]
@@ -57,12 +57,8 @@ class FinancialPosition(object):
     random.shuffle(list2)
 
     # Assign the lists to debit and credit
-    if debit_length <= credit_length:
-      debit_list = list1
-      credit_list = list2
-    elif credit_length < debit_length:
-      credit_list = list1
-      debit_list = list2
+    debit_list = list1 if len(debit_accounts) <= len(credit_accounts) else list2
+    credit_list = list1 if len(credit_accounts) < len(debit_accounts) else list2
 
     # Pop the lists and assign the amounts to the accounts. Totals are also
     # calculated.
