@@ -3,37 +3,34 @@ import random
 
 from tabulate import tabulate
 
-class Account(object):
+class Account:
   def __init__(self, acct_data, amount):
-    self.id_ = acct_data[0]
-    self.type_ = acct_data[1]
-    self.flow = acct_data[2]
+    self.acct_id = acct_data[0]
+    self.acct_type = acct_data[1]
+    self.acct_flow = acct_data[2]
     self.amount = amount
 
-class FinancialPosition(object):
+class FinancialPosition:
   def __init__(self):
-    self.account_list = self.loadJSON()
+    self.account_list = self.loadJSON("statement_db.json")
     self.data = []
     self.debit_total = 0
     self.credit_total = 0
 
-  def loadJSON(self):
-    with open("statement_db.json") as file:
+  def loadJSON(self, filename):
+    with open(filename) as file:
       return list(json.load(file).values())[0]
 
   def generateAccounts(self, min_amount=100_000, max_amount=1_000_000):
     # Split account list between direction of cash flow.
     debit_accounts = [data for data in self.account_list if data[2] == "debit"]
     credit_accounts = [data for data in self.account_list if data[2] == "credit"]
-
     len1 = min(len(debit_accounts), len(credit_accounts))
     len2 = max(len(debit_accounts), len(credit_accounts))
 
-    # Generate the first list.
+    # Generate the first list, calculate the sum of the first list, the
+    # average, and its modulo remainder
     list1 = [random.randint(min_amount, max_amount) for _ in range(len1)]
-
-    # Calculate the sum of the first list, the average, and its modulo
-    # remainder
     target = sum(list1)
     avg = target // len2
     rem = target % len2
@@ -86,14 +83,14 @@ class FinancialPosition(object):
       row.append(data.id_)
       row.append(data.type_)
 
-      if data.flow == "debit":
+      if data.acct_flow == "debit":
         row.append(f"{data.amount:,}")
         row.append("")
-      elif data.flow == "credit":
+      elif data.acct_flow == "credit":
         row.append("")
         row.append(f"{data.amount:,}")
       else:
-        message = f"Invalid flow direction.:{data.flow}"
+        message = f"Invalid flow direction.:{data.acct_flow}"
         raise ValueError(message)
 
       table.append(row)
