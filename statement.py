@@ -22,14 +22,9 @@ class FinancialPosition(object):
       return list(json.load(file).values())[0]
 
   def generateAccounts(self, min_amount=100_000, max_amount=1_000_000):
-    # Length check. (TODO: There must be a better way of doing this.)
-    debit_length = 0
-    credit_length = 0
-    for data in self.account_list:
-      if data[2] == "debit":
-        debit_length += 1
-      if data[2] == "credit":
-        credit_length += 1
+    # Find the length of the debit and credit account lists.
+    debit_length = len([data for data in self.account_list if data[2] == "debit"])
+    credit_length = len([data for data in self.account_list if data[2] == "credit"])
 
     len1 = min(debit_length, credit_length)
     len2 = max(debit_length, credit_length)
