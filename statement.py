@@ -43,8 +43,7 @@ class FinancialPosition:
     # Calculate the max variation to be used for modification.
     max_var = min((avg - min_amount), (max_amount - avg))
 
-    # Variate the integers in the list. AKA add a variation from one integer
-    # and subtract it from another.
+    # Variate the integers in the list.
     for i in range(1, len2, 2):
       integer = random.randint(1, max_var)
       list2[i-1] += integer
@@ -74,26 +73,12 @@ class FinancialPosition:
       self.data.append(Account(data, amount))
 
   def tabulate(self):
-    table = [["ID", "Account", "Debit", "Credit"]]
-
-    for data in self.data:
-      flow = ""
-      row = []
-
-      row.append(data.id_)
-      row.append(data.type_)
-
-      if data.acct_flow == "debit":
-        row.append(f"{data.amount:,}")
-        row.append("")
-      elif data.acct_flow == "credit":
-        row.append("")
-        row.append(f"{data.amount:,}")
-      else:
-        message = f"Invalid flow direction.:{data.acct_flow}"
-        raise ValueError(message)
-
-      table.append(row)
+    table = [["ID", "Account", "Debit", "Credit"]] + [
+      [data.acct_id, data.acct_type, f"{data.amount:,}", ""]
+        if data.acct_flow == "debit"
+        else [data.acct_id, data.acct_type, "", f"{data.amount:,}"]
+        for data in self.data
+    ]
 
     table.append(["", "Total", f"{self.debit_total:,}", f"{self.credit_total:,}"])
 
