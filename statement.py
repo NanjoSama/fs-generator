@@ -3,42 +3,34 @@ import random
 
 from tabulate import tabulate
 
-class Account(object):
+class Account:
   def __init__(self, acct_data, amount):
-    self.id_ = acct_data[0]
-    self.type_ = acct_data[1]
-    self.flow = acct_data[2]
+    self.acct_id = acct_data[0]
+    self.acct_type = acct_data[1]
+    self.acct_flow = acct_data[2]
     self.amount = amount
 
-class FinancialPosition(object):
+class FinancialPosition:
   def __init__(self):
-    self.account_list = self.loadJSON()
+    self.account_list = self.loadJSON("statement_db.json")
     self.data = []
     self.debit_total = 0
     self.credit_total = 0
 
-  def loadJSON(self):
-    with open("statement_db.json") as file:
+  def loadJSON(self, filename):
+    with open(filename) as file:
       return list(json.load(file).values())[0]
 
   def generateAccounts(self, min_amount=100_000, max_amount=1_000_000):
-    # Length check. (TODO: There must be a better way of doing this.)
-    debit_length = 0
-    credit_length = 0
-    for data in self.account_list:
-      if data[2] == "debit":
-        debit_length += 1
-      if data[2] == "credit":
-        credit_length += 1
+    # Split account list between direction of cash flow.
+    debit_accounts = [data for data in self.account_list if data[2] == "debit"]
+    credit_accounts = [data for data in self.account_list if data[2] == "credit"]
+    len1 = min(len(debit_accounts), len(credit_accounts))
+    len2 = max(len(debit_accounts), len(credit_accounts))
 
-    len1 = min(debit_length, credit_length)
-    len2 = max(debit_length, credit_length)
-
-    # Generate the first list.
+    # Generate the first list, calculate the sum of the first list, the
+    # average, and its modulo remainder
     list1 = [random.randint(min_amount, max_amount) for _ in range(len1)]
-
-    # Calculate the sum of the first list, the average, and its modulo
-    # remainder
     target = sum(list1)
     avg = target // len2
     rem = target % len2
@@ -51,8 +43,7 @@ class FinancialPosition(object):
     # Calculate the max variation to be used for modification.
     max_var = min((avg - min_amount), (max_amount - avg))
 
-    # Variate the integers in the list. AKA add a variation from one integer
-    # and subtract it from another.
+    # Variate the integers in the list.
     for i in range(1, len2, 2):
       integer = random.randint(1, max_var)
       list2[i-1] += integer
@@ -62,12 +53,8 @@ class FinancialPosition(object):
     random.shuffle(list2)
 
     # Assign the lists to debit and credit
-    if debit_length <= credit_length:
-      debit_list = list1
-      credit_list = list2
-    elif credit_length < debit_length:
-      credit_list = list1
-      debit_list = list2
+    debit_list = list1 if len(debit_accounts) <= len(credit_accounts) else list2
+    credit_list = list1 if len(credit_accounts) < len(debit_accounts) else list2
 
     # Pop the lists and assign the amounts to the accounts. Totals are also
     # calculated.
@@ -86,26 +73,12 @@ class FinancialPosition(object):
       self.data.append(Account(data, amount))
 
   def tabulate(self):
-    table = [["ID", "Account", "Debit", "Credit"]]
-
-    for data in self.data:
-      flow = ""
-      row = []
-
-      row.append(data.id_)
-      row.append(data.type_)
-
-      if data.flow == "debit":
-        row.append(f"{data.amount:,}")
-        row.append("")
-      elif data.flow == "credit":
-        row.append("")
-        row.append(f"{data.amount:,}")
-      else:
-        message = f"Invalid flow direction.:{data.flow}"
-        raise ValueError(message)
-
-      table.append(row)
+    table = [["ID", "Account", "Debit", "Credit"]] + [
+      [data.acct_id, data.acct_type, f"{data.amount:,}", ""]
+        if data.acct_flow == "debit"
+        else [data.acct_id, data.acct_type, "", f"{data.amount:,}"]
+        for data in self.data
+    ]
 
     table.append(["", "Total", f"{self.debit_total:,}", f"{self.credit_total:,}"])
 
