@@ -10,10 +10,11 @@ class Account:
     self.acct_flow = acct_data[2]
     self.amount = amount
 
-class FinancialPosition:
+class Statement:
   def __init__(self):
     self.account_list = self.loadJSON("statement_db.json")
     self.data = []
+
     self.debit_total = 0
     self.credit_total = 0
 
@@ -71,6 +72,10 @@ class FinancialPosition:
         raise ValueError(message)
 
       self.data.append(Account(data, amount))
+
+class FinancialPosition(Statement):
+  def __init__(self):
+    super().__init__()
 
   def tabulate(self):
     table = [["ID", "Account", "Debit", "Credit"]] + [
